@@ -1,5 +1,20 @@
-function [Amap,H_vec,K_vec] = HKstack(RF,tt,rayp,phase_wts,Vs_av,H_vec,K_vec)
+function [Amap,H_vec,K_vec] = HKstack(RF,tt,rayp,phase_wts,Vs_av,H_vec,K_vec,options)
 % Amap = HKstack(RF,tt,Vs_av,H_grid,K_grid)
+    arguments
+        RF
+        tt
+        rayp
+        phase_wts
+        Vs_av
+        H_vec = []
+        K_vec = []
+        options.kChoice = nan; 
+        options.hChoice = nan; 
+        options.plotPicks = false; 
+        options.vpvsANIS_vpvs = []; 
+        options.Vsv_av = []; 
+    end
+        
 
 %% grids of H and K
 if nargin < 6 || isempty(H_vec)
@@ -8,9 +23,17 @@ end
 H_vec = H_vec(:); % make column
 
 if nargin < 7 || isempty(K_vec)
-    K_vec = [1.6:0.01:1.9];
+    K_vec = [1.6:0.01:2.1];
 end
 K_vec = K_vec(:)'; % make row
+
+if ~isempty(options.vpvsANIS_vpvs); %!%!
+    % Scale K and v to be anisotropic. 
+    % Scale them back to isotropic values at the end. 
+    K_vec = K_vec .* options.vpvsANIS_vpvs;
+    Vs_av_iso = Vs_av; 
+    Vs_av = options.Vsv_av; 
+end
 
 Vs_av = Vs_av.*ones(size(K_vec));
 
@@ -31,4 +54,44 @@ Amap =  phase_wts(1).*interp1(tt,RF,t_ps) ...
       - phase_wts(3).*interp1(tt,RF,t_ppss,[],0); % negative phase!
 
 
+if ~isempty(options.vpvsANIS_vpvs); %!%!
+    % Scale K and v back to isotropic values
+    K_vec = K_vec ./ options.vpvsANIS_vpvs;
+    Vs_av = Vs_av_iso; 
+end
+  
+ %% Make a plot of receiver function and show times we are plucking from
+if options.plotPicks; 
+    
+    % temp
+    % Dimensions are H size by K size. 
+%     kChoice = 1.8; % 
+%     hChoice = 45; % 
+    kChoice = options.kChoice; 
+    hChoice = options.hChoice; 
+        
+    t_ps_best   = interpn(H_vec, K_vec, t_ps  , hChoice, kChoice); 
+    t_ppps_best = interpn(H_vec, K_vec, t_ppps, hChoice, kChoice); 
+    t_ppss_best = interpn(H_vec, K_vec, t_ppss, hChoice, kChoice); 
+
+    
+    figure(132); clf; hold on; 
+    plot(tt, RF); 
+    xlabel('t (s)'); 
+    ylabel('Amp'); 
+    grid on; 
+    box on; 
+
+    plt_ps   = plot(ones(2,1) .* t_ps_best  , [0, max(RF)*1.2]); 
+    plt_ppps = plot(ones(2,1) .* t_ppps_best, [0, max(RF)*1.2]); 
+    plt_ppss = plot(ones(2,1) .* t_ppss_best, [0,-max(RF)*1.2]); 
+    
+    legend([plt_ps, plt_ppps, plt_ppss], ...
+        'ps', 'ppps', 'ppss');  
+
+    title(sprintf('H = %2.1f, Vp/Vs = %1.2f', ...
+        hChoice, kChoice)); 
+end
+ 
+  
 end
