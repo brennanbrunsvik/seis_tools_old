@@ -38,15 +38,19 @@ end
 ind = [1:length(tt_mig)]; 
 
 % cut out repetitions in the vectors
-reps = find(diff(tt_mig)==0);
-ind(reps)= []; %#ok<FNDSB>
+% % % reps = find(diff(tt_mig)==0);
+% % % ind(reps)= []; %#ok<FNDSB>
+reps = tt_mig(1:end-1) == tt_mig(2:end); 
+reps = [reps; false]; % Make sure reps has same size as zz, vs, and vp. 
+
 % cut out nans (i.e. inhomogeneous) from both vectors
 if rayp_ref~=0
     inhom = (imag(tt_mig)~=0) | (imag(tt_mig_ref)~=0);
 else
     inhom = (imag(tt_mig)~=0);
 end
-ind(inhom) = [];
+
+ind( or(inhom, reps) ) = [];
 
 if rayp_ref~=0
     ott = interp1(tt_mig(ind),tt_mig_ref(ind),itt,'linear',nan);
