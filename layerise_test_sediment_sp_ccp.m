@@ -65,10 +65,11 @@ break_inds = [1]; % Indecies where we will break into layers.
 for iz = 2:(length(Z)-1);
 % % % 
     %!%!%!
-    global ignore_depth
-    ifplot = 1; warning('if plot force true'); 
+%     global ignore_depth
+    ignore_depth = 5; 
+%     ifplot = 1; warning('if plot force true'); 
     if sum(dz(1:iz)) < ignore_depth; 
-        warning('Excluding shallow layers'); 
+%         warning('Excluding shallow layers'); 
         continue; 
     end
     %!%!%!
@@ -133,7 +134,8 @@ end
 for iz = 1:length(zlayt); 
     %!%!%! TEMPORARY 
     in_lay = and( ( Z_shift >= zlayt(iz) ) , ( Z_shift <= zlayb(iz) ) ); % Within this layer or not? Note: This realies on Z_shift having discontinuity depths modified. 
-    global continue_up 
+%     global continue_up 
+    continue_up = true;  
     if continue_up; 
         if iz <3; 
             in_lay = find(in_lay); 
