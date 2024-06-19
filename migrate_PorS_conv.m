@@ -18,6 +18,18 @@ zz = model.z(:);
 vs = model.VS(:);
 vp = model.VP(:);
 
+%%% Try the earth flattening transformation. 
+% % % a = 6371; 
+% % % r = a - zz; 
+% % % zzf = -a .* log(r./a); 
+% % % vsf = a./r .* vs; 
+% % % vpf = a./r .* vp; 
+% % % 
+% % % zz = zzf; 
+% % % vs = vsf; 
+% % % vp = vpf; 
+%%%
+
 if strcmp(ph,'Ps')
     tt_mig = diff(zz).*( sqrt(midpts(1./vs./vs) - rayp^2) - sqrt(midpts(1./vp./vp) - rayp^2) );
     if rayp_ref~=0
@@ -30,8 +42,10 @@ elseif strcmp(ph,'Sp')
     end
 end
 
-tt_mig = cumsum([0;tt_mig]);
+% tt_mig = cumtrapz([0;tt_mig]); % Trapz gives a max of about 0.1 difference over 40 s versus cumsum. Not necessary. 
+tt_mig = cumsum([0;tt_mig]); % Trapz gives a max of about 0.1 difference over 40 s versus cumsum. Not necessary. 
 if rayp_ref~=0  
+%     tt_mig_ref = cumtrapz([0;tt_mig_ref]);
     tt_mig_ref = cumsum([0;tt_mig_ref]);
 end
 

@@ -1,5 +1,6 @@
-function [Amap,H_vec,K_vec] = HKstack(RF,tt,rayp,phase_wts,Vs_av,H_vec,K_vec,options)
+function [Amap,H_vec,K_vec,t_pred] = HKstack(RF,tt,rayp,phase_wts,Vs_av,H_vec,K_vec,options)
 % Amap = HKstack(RF,tt,Vs_av,H_grid,K_grid)
+%t_pred is optional 
     arguments
         RF
         tt
@@ -47,8 +48,12 @@ t_ps = H_vec*(kks - kkp); % using outer product
 t_ppps = H_vec*(kks + kkp); % using outer product
 t_ppss = H_vec*(2*kks); % using outer product
 
+t_pred = zeros(3, size(t_ps,1), size(t_ps,2) ); 
+t_pred(1,:,:) = t_ps; t_pred(2,:,:) = t_ppps; t_pred(3,:,:) = t_ppss; 
+% t_pred = [t_ps; t_ppps; t_ppss]; 
+
 % sum weighted contributions from each phase type
-phase_wts = phase_wts/sum(phase_wts);
+phase_wts = phase_wts/sum(phase_wts); %normalize to 1 just in case
 Amap =  phase_wts(1).*interp1(tt,RF,t_ps) ...
       + phase_wts(2).*interp1(tt,RF,t_ppps) ...
       - phase_wts(3).*interp1(tt,RF,t_ppss,[],0); % negative phase!
@@ -65,7 +70,7 @@ if options.plotPicks;
     
     % temp
     % Dimensions are H size by K size. 
-%     kChoice = 1.8; % 
+%     kChoice = 1.75; % 
 %     hChoice = 45; % 
     kChoice = options.kChoice; 
     hChoice = options.hChoice; 
