@@ -18,16 +18,18 @@ zz = model.z(:);
 vs = model.VS(:);
 vp = model.VP(:);
 
-%%% Try the earth flattening transformation. 
-% % % a = 6371; 
-% % % r = a - zz; 
-% % % zzf = -a .* log(r./a); 
-% % % vsf = a./r .* vs; 
-% % % vpf = a./r .* vp; 
-% % % 
-% % % zz = zzf; 
-% % % vs = vsf; 
-% % % vp = vpf; 
+%%% Can work this code into the function, as an option, for doing the Earth
+%%% flattening transformation to handle spherical Earth. Makes a small
+%%% change to results. 
+% a = 6371; 
+% r = a - zz; 
+% zzf = -a .* log(r./a); 
+% vsf = a./r .* vs; 
+% vpf = a./r .* vp; 
+% 
+% zz = zzf; 
+% vs = vsf; 
+% vp = vpf; 
 %%%
 
 if strcmp(ph,'Ps')
@@ -42,8 +44,8 @@ elseif strcmp(ph,'Sp')
     end
 end
 
-% tt_mig = cumtrapz([0;tt_mig]); % Trapz gives a max of about 0.1 difference over 40 s versus cumsum. Not necessary. 
-tt_mig = cumsum([0;tt_mig]); % Trapz gives a max of about 0.1 difference over 40 s versus cumsum. Not necessary. 
+% tt_mig = cumtrapz([0;tt_mig]); % Trapz gives a max of about 0.1 difference over 40 s versus cumsum. Not necessary. Comment is left in case further exploration is desired. 
+tt_mig = cumsum([0;tt_mig]); 
 if rayp_ref~=0  
 %     tt_mig_ref = cumtrapz([0;tt_mig_ref]);
     tt_mig_ref = cumsum([0;tt_mig_ref]);
@@ -52,8 +54,6 @@ end
 ind = [1:length(tt_mig)]; 
 
 % cut out repetitions in the vectors
-% % % reps = find(diff(tt_mig)==0);
-% % % ind(reps)= []; %#ok<FNDSB>
 reps = tt_mig(1:end-1) == tt_mig(2:end); 
 reps = [reps; false]; % Make sure reps has same size as zz, vs, and vp. 
 
@@ -72,8 +72,5 @@ else
     ott = interp1(tt_mig(ind),zz(ind),itt,'linear',nan);    
 end
     
-
-
-
 end
 
