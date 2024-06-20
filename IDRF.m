@@ -66,4 +66,9 @@ end
 RF = flipud(RF);
 RF_Time = fliplr(RF_Time);
 
+%plot(dt*t_corr(t_corr<0 & dt*t_corr>-40),RF_a(t_corr<0 & dt*t_corr>-40))
+
+
+
+
 end

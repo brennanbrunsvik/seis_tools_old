@@ -83,10 +83,10 @@ endtimes = datenum(endtimes);
 %% request details
 usrname(isspace(usrname)) = '_';
 institution = 'UC Santa Barbara';
-snail_mail  = 'Webb Hall, UCSB, Santa Barbara, CA 93106';
+snail_mail  = '2116 Webb Hall, UCSB, Santa Barbara, CA 93106';
 e_mail      = getpref('Internet','E_mail');
-workphone   = '(435) 238-3602';
-workfax     = '(###) ###-####';
+workphone   = '(805) 893-4688';
+workfax     = '(805) 893-2314';
 
 %% XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 %% SHOULDN'T NEED TO CHANGE ANYTHING BELOW HERE
@@ -178,6 +178,10 @@ elseif strcmp(datatype,'miniSEED')==1; toaddress='miniseed@iris.washington.edu';
 elseif strcmp(datatype,'sync')==1; toaddress='sync@iris.washington.edu'; 
 else toaddress=e_mail; 
 end
+
+
 %% send to IRIS
-sendmail(toaddress,'IRIS_data_request',msgtxt)
-sendmail(e_mail,'IRIS_data_request',msgtxt)
+warning('gmail has prevented MATLAB from sending emails...')
+% sendmail(toaddress,'IRIS_data_request',msgtxt)
+% sendmail(e_mail,'IRIS_data_request',msgtxt)
+

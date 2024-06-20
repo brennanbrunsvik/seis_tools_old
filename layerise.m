@@ -145,7 +145,6 @@ if process_varargin;
     end
 end
          
-
 if ifplot
     figure(11); clf; set(gcf,'pos', [-581 247 514 796], 'color', 'white'); 
     h = tiledlayout(1, 1+length(varargin),'TileSpacing','compact'); 
